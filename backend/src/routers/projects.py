@@ -3,9 +3,7 @@ from fastapi import APIRouter, Depends
 
 from src.services.projects import ProjectService
 from src.core.dependencies import UOWdep, UserDep, AdminDep
-from src.schemas.projects import (ProjectCreateSchema, 
-                                  ProjectCreateManagerSchema, 
-                                  ProjectUpdateManagerSchema,
+from src.schemas.projects import (ProjectCreateSchema,
                                   ProjectUpdateSchema, 
                                   ProjectSchema, 
                                   ProjectFilterSchema)
@@ -15,7 +13,7 @@ router = APIRouter(prefix='/projects', tags=['Projects'])
 @router.post('/', status_code=201, response_model=ProjectSchema)
 async def create_project(
     uow: UOWdep, 
-    data: ProjectCreateManagerSchema | ProjectCreateSchema, 
+    data: ProjectCreateSchema, 
     user_sub: UserDep
 ):
     return await ProjectService.create_project(uow, data, user_sub)
@@ -38,7 +36,7 @@ async def get_project(
 async def update_project(
     uow: UOWdep, 
     project_id: int, 
-    data: ProjectUpdateManagerSchema | ProjectUpdateSchema, 
+    data: ProjectUpdateSchema, 
     user_sub: UserDep
 ):
     return await ProjectService.update_project(uow, project_id, data, user_sub)

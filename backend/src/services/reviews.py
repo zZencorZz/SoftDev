@@ -8,11 +8,11 @@ class ReviewService:
     @staticmethod
     async def create_review(uow: IUnitOfWork, data: ReviewCreateSchema, user_sub: dict):
         async with uow:
-            data = data.model_copy(update={"client_id": user_sub.get("user_id")})
+            data = data.clean_dict()
+            data.update({"client_id": user_sub.get("user_id")})
             if user_sub.get("user_role") != UserRole.USER:
                 raise ForbiddenException()
-            print(data)
-            new_review = await uow.reviews.create(data.clean_dict())
+            new_review = await uow.reviews.create(data)
             await uow.commit()
             return new_review
 

@@ -14,11 +14,9 @@ class ProjectStatus(StrEnum):
     PAYMENT_RECEIVED = 'Оплата получена'
     ARCHIVED = 'Архивирован'
 
-class ArchitectureType(StrEnum):
-    MONOLITHIC = 'Монолитная'
-    MICROSERVICES = 'Микросервисы'
-    SERVERLESS = 'Безсерверная'
-    SERVICE_ORIENTED = 'Сервис-ориентированная'
-    LAYERED = 'Слойная'
-    
-    
+class LinkName(StrEnum):
+    GITHUB = "Github"
+    FIGMA = "Figma"
+    NOTION = "Notion"
+    YANDEX_TRACKER = "Yandex Tracker"
+    YANDEX_CLOUD = "Yandex Cloud"

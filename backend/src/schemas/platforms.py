@@ -1,6 +1,5 @@
-from pydantic import Field, ConfigDict
+from pydantic import Field
 from typing import Optional
-from datetime import date
 
 from src.schemas.base_schema import BaseSchema
 

@@ -1,6 +1,4 @@
 from src.schemas.projects import (ProjectCreateSchema, 
-                                  ProjectCreateManagerSchema, 
-                                  ProjectUpdateManagerSchema,
                                   ProjectUpdateSchema, 
                                   ProjectFilterSchema)
 from src.repositories.unit_of_work import IUnitOfWork
@@ -10,19 +8,11 @@ from src.core.exceptions import ForbiddenException
 class ProjectService:
     
     @staticmethod
-    async def create_project(
-        uow: IUnitOfWork, 
-        data: ProjectCreateSchema | ProjectCreateManagerSchema, 
-        user_sub: dict
-    ):
-        if isinstance(data, ProjectCreateManagerSchema):
-            if user_sub.get("user_role") != UserRole.ADMIN:
-                raise ForbiddenException()
-            data = data.model_copy(update={"manager_id": user_sub.get("user_id")}) 
-        elif isinstance(data, ProjectCreateSchema):
-            data = data.model_copy(update={"client_id": user_sub.get("user_id")})
+    async def create_project(uow: IUnitOfWork, data: ProjectCreateSchema, user_sub: dict):
         async with uow:
-            new_project = await uow.projects.create(data.clean_dict())
+            data = data.clean_dict()
+            data.update({"client_id": user_sub.get("user_id")})
+            new_project = await uow.projects.create(data)
             await uow.commit()
             return new_project
 
@@ -39,22 +29,9 @@ class ProjectService:
             return project
         
     @staticmethod
-    async def update_project(
-        uow: IUnitOfWork, 
-        project_id: int, 
-        data: ProjectUpdateSchema | ProjectUpdateManagerSchema, 
-        user_sub: dict
-    ):
+    async def update_project(uow: IUnitOfWork, project_id: int, data: ProjectUpdateSchema, user_sub: dict):
         async with uow:
             project = await uow.projects.get_one_filter_by(id=project_id)
-
-            if isinstance(data, ProjectUpdateManagerSchema):
-                if user_sub.get("user_role") != UserRole.ADMIN:
-                    raise ForbiddenException()
-            elif isinstance(data, ProjectUpdateSchema):
-                if user_sub.get("user_id") != project.client_id:
-                    raise ForbiddenException()
-                
             upd_project = await uow.projects.update(entity_id=project_id, **data.clean_dict())
             await uow.commit()
             return upd_project
