@@ -11,7 +11,7 @@ async def register(uow: UOWdep, data: RegisterSchema):
     return await AuthService().registration(uow, data)
 
 @router.post('/login', status_code= 200)
-async def login(uow: UOWdep, data: LoginSchema = Form(...)):
+async def login(uow: UOWdep, data: LoginSchema):
     return await AuthService().login(uow, data)
 
 @router.post('/refresh', status_code=200)
