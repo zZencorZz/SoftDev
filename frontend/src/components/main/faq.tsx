@@ -25,11 +25,9 @@ const FaqItem: React.FC<FaqItemProps> = ({ question, answer }) => {
     const icon = iconRef.current;
     if (!content || !icon) return;
 
-    // Проверяем, открыта ли панель прямо сейчас
     const isOpen = gsap.getProperty(content, 'height') !== 0;
 
     if (!isOpen) {
-      // Открываем: плавно выставляем высоту контента в auto 
       gsap.to(content, {
         height: 'auto',
         duration: 0.4,
