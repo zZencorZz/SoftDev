@@ -7,10 +7,12 @@ import gsap from 'gsap';
 import { User, Lock, LogIn, UserPlus, ShieldAlert, Fingerprint, RefreshCw } from 'lucide-react';
 import { authService } from '@/api/auth/authServ';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/authContext';
 
 
 export default function AuthPage() {
   const router = useRouter();
+  const { checkAuth } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -133,6 +135,8 @@ export default function AuthPage() {
         setSysLog('status: database_initialized. redirecting...');
       }
 
+      await checkAuth();
+
       gsap.to(cardRef.current, {
         opacity: 0,
         scale: 0.88,
@@ -141,7 +145,7 @@ export default function AuthPage() {
         duration: 0.4,
         ease: 'power4.in',
         onComplete: () => {
-          router.push('/');
+          router.push('/profile');
           router.refresh();
         },
       });

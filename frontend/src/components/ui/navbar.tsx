@@ -5,17 +5,20 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { MousePointerClick, Menu, X } from "lucide-react";
+import { MousePointerClick, Menu, X, LogOut, User, Shield, ChevronDown } from "lucide-react";
 import { navLinks } from "@/types/navbar/navLinks";
+import { useAuth } from "@/context/authContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function Navbar() {
+  const { user, isLoading, logout } = useAuth();
   const container = useRef<HTMLDivElement>(null);
   const navBox = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useGSAP(() => {
     const tl = gsap.timeline();
@@ -78,11 +81,48 @@ export default function Navbar() {
           ))}
         </div>
 
+        <div className="hidden md:block nav-anim-item relative">
+          {isLoading ? (
+            <div className="h-5 w-16 bg-white/5 rounded animate-pulse" />
+          ) : user ? (
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)} 
+                className="flex items-center gap-2 text-sm font-mono font-bold text-gray-300 hover:text-white transition-colors border border-white/5 bg-white/[0.02] px-3 py-1.5 rounded-xl backdrop-blur-md"
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${user.role === 'admin' ? 'bg-emerald-400' : 'bg-blue-400'} animate-pulse`} />
+                <span>{user.username}</span>
+                <ChevronDown size={14} className={`text-slate-500 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-        <div className="hidden md:block nav-anim-item">
-          <Link href="/auth" className="text-sm font-bold text-gray-300 hover:text-white transition-colors">
-            Войти
-          </Link>
+              <div
+                className={`absolute right-0 mt-2 w-48 rounded-xl border border-white/[0.06] bg-[#0c0c0e] p-1.5 shadow-xl backdrop-blur-2xl transition-all duration-200 origin-top-right ${
+                  isDropdownOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                }`}
+              >
+                <Link
+                  href="/profile"
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-mono text-slate-400 hover:bg-white/[0.03] hover:text-white transition-colors"
+                >
+                  {user.role === 'admin' ? <Shield size={13} className="text-emerald-400" /> : <User size={13} className="text-blue-400" />}
+                  <span>Профиль</span>
+                </Link>
+                <div className="my-1 h-[1px] w-full bg-white/[0.04]" />
+                <button
+                  onClick={logout}
+                  className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-mono text-red-400/80 hover:bg-red-500/[0.03] hover:text-red-400 transition-colors"
+                >
+                  <LogOut size={13} />
+                  <span>Выйти</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <Link href="/auth" className="text-sm font-bold text-gray-300 hover:text-white transition-colors">
+              Войти
+            </Link>
+          )}
         </div>
 
         <button 
@@ -110,14 +150,41 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            
             <div className="h-[1px] w-12 bg-white/10 my-2" />
-            <Link 
-              href="/auth" 
-              onClick={() => setIsOpen(false)}
-              className="text-lg font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              Войти в личный кабинет
-            </Link>
+            
+            {isLoading ? (
+              <div className="h-6 w-24 bg-white/5 rounded animate-pulse" />
+            ) : user ? (
+              <div className="flex flex-col items-center gap-4">
+                <Link 
+                  href="/profile" 
+                  onClick={() => setIsOpen(false)}
+                  className="text-lg font-mono font-bold text-slate-200 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <span className={`h-2 w-2 rounded-full ${user.role === 'admin' ? 'bg-emerald-400' : 'bg-blue-400'}`} />
+                  {user.username}
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    logout();
+                  }}
+                  className="text-sm font-mono text-red-400 hover:text-red-300 flex items-center gap-1.5"
+                >
+                  <LogOut size={14} />
+                  <span>Покинуть инстанс</span>
+                </button>
+              </div>
+            ) : (
+              <Link 
+                href="/auth" 
+                onClick={() => setIsOpen(false)}
+                className="text-lg font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+              >
+                Войти в личный кабинет
+              </Link>
+            )}
           </div>
         </div>
       </div>
