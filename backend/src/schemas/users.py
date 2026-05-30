@@ -56,6 +56,7 @@ class UserUpdateSchema(BaseSchema):
     username: Optional[str] = Field(default=None, max_length=50, examples=["ZencorZ"])
     password: Optional[str] = Field(default=None, examples=["(p@SSword3.14)"])
     organization: Optional[str] = Field(default=None)
+    full_name: Optional[str] = Field(default=None)
     email: Optional[EmailStr] = Field(default=None, max_length=100)
     role: Optional[UserRole] = Field(default=None)
 

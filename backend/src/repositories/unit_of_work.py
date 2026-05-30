@@ -11,8 +11,8 @@ class IUnitOfWork(ABC):
     users: UserRepository
     languages: LanguageRepository
     platforms: PlatformRepository
-    project_languages: ProjectLanguageRepository
-    project_platforms: ProjectPlatformRepository
+    architectures: ArchitectureRepository
+    software_types: SoftwareTypeRepository
 
     @abstractmethod
     async def __aenter__(self):
@@ -44,9 +44,9 @@ class UnitOfWork(IUnitOfWork):
         self.users = UserRepository(self.session)
         self.languages = LanguageRepository(self.session)
         self.platforms = PlatformRepository(self.session)
-        self.project_languages = ProjectLanguageRepository(self.session)
-        self.project_platforms = ProjectPlatformRepository(self.session)
-
+        self.architectures = ArchitectureRepository(self.session)
+        self.software_types = SoftwareTypeRepository(self.session)
+        
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

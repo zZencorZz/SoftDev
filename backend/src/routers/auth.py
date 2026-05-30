@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, Cookie
+from fastapi import APIRouter, Cookie, Form
 
 from src.services.auth import AuthService
 from src.schemas.auth import RegisterSchema, LoginSchema
@@ -18,3 +18,6 @@ async def login(uow: UOWdep, data: LoginSchema):
 async def refresh(uow: UOWdep, refresh_token: str = Cookie(None)):
     return await AuthService().refresh_token(uow, refresh_token)
 
+@router.post('/auth', status_code= 200)
+async def login(uow: UOWdep, data: LoginSchema = Form(...)):
+    return await AuthService().login(uow, data)

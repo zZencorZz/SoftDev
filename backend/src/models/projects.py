@@ -1,25 +1,11 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Date, ForeignKey, Numeric, Table, Column
+from sqlalchemy import Integer, String, Date, ForeignKey, Numeric
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import date
 from typing import List
 
 from src.models.base import BaseSQLModel
-from src.enums.projects import ProjectStatus, ArchitectureType
-
-project_languages = Table(
-    "project_languages",
-    BaseSQLModel.metadata,
-    Column("project_id", Integer, ForeignKey("projects.id", ondelete="CASCADE"), primary_key=True),
-    Column("language_id", Integer, ForeignKey("languages.id", ondelete="CASCADE"), primary_key=True),
-)
-
-project_platforms = Table(
-    "project_platforms",
-    BaseSQLModel.metadata,
-    Column("project_id", Integer, ForeignKey("projects.id", ondelete="CASCADE"), primary_key=True),
-    Column("platform_id", Integer, ForeignKey("platforms.id", ondelete="CASCADE"), primary_key=True),
-)
+from src.enums.projects import ProjectStatus
 
 class Project(BaseSQLModel):
     __tablename__ = "projects"
@@ -31,11 +17,14 @@ class Project(BaseSQLModel):
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True)
 
-    software_type: Mapped[str] = mapped_column(String(100), nullable=True)
-    architecture_type: Mapped[ArchitectureType] = mapped_column(String(100), nullable=True)
+    language_id: Mapped[int] = mapped_column(Integer, ForeignKey('languages.id'), nullable=True)
+    platform_id: Mapped[int] = mapped_column(Integer, ForeignKey('platforms.id'), nullable=True)
+    architecture_id: Mapped[int] = mapped_column(Integer, ForeignKey('architectures.id'), nullable=True)
+    software_type_id: Mapped[int] = mapped_column(Integer, ForeignKey('software_types.id'), nullable=True)
+
     target_users_count: Mapped[int] = mapped_column(Integer, nullable=True)
 
-    links: Mapped[dict] = mapped_column(JSONB, nullable=True, default=dict)
+    links: Mapped[dict] = mapped_column(JSONB, nullable=True, default=list)
 
     status: Mapped[ProjectStatus] = mapped_column(String(50), nullable=False, default=ProjectStatus.CREATED)
     price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=True)
@@ -46,6 +35,9 @@ class Project(BaseSQLModel):
 
     client: Mapped["User"] = relationship("User", foreign_keys=[client_id], lazy="joined")
     manager: Mapped["User"] = relationship("User", foreign_keys=[manager_id], lazy="joined")
-    languages: Mapped[List["Language"]] = relationship(secondary=project_languages, lazy="selectin")
-    platforms: Mapped[List["Platform"]] = relationship(secondary=project_platforms, lazy="selectin")
+    
+    architecture: Mapped["Architecture"] = relationship("Architecture", foreign_keys=[architecture_id], lazy="joined")
+    software_type: Mapped["SoftwareType"] = relationship("SoftwareType", foreign_keys=[software_type_id], lazy="joined")
+    language: Mapped["Language"] = relationship("Language", foreign_keys=[language_id], lazy="joined")
+    platform: Mapped["Platform"] = relationship("Platform", foreign_keys=[platform_id], lazy="joined")
 

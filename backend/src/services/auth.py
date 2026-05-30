@@ -66,7 +66,7 @@ class AuthService:
             raise AuthException()
         
         return self._generate_user_tokens(int(user_id), payload.get('role'))
-        
+
     # Хелпер функции для работы с токенами
     def _generate_user_tokens(self, user_id: int, role: UserRole) -> dict:
         access = self._generate_token(user_id, role, TokenType.ACCESS)
@@ -93,7 +93,7 @@ class AuthService:
         }
 
         return self._encode_jwt(payload)
-    
+
     def _encode_jwt(self, payload: dict) -> str:
         return self._jwt.encode(
             payload, 
