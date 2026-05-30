@@ -246,7 +246,6 @@ export default function ProfilePage() {
                                 {project.name}
                               </h4>
                               
-                              {/* УСЛОВИЕ: Если админ — выводим селект, если юзер — обычный статичный статус */}
                               {isAdmin ? (
                                 <select
                                   value={project.status || 'Создан'}
