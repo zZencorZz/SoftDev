@@ -17,7 +17,6 @@ import { getStatusStyles } from '@/utils/status';
 
 type TabType = 'console' | 'config';
 
-// Массив доступных статусов для админки
 const AVAILABLE_STATUSES = [
   'Создан', 
   'На рассмотрении', 
