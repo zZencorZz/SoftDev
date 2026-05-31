@@ -89,6 +89,7 @@ class ProjectUpdateSchema(BaseSchema):
 
     links: Optional[List[LinkSchema]] = Field(default=None)
 
+    status: Optional[ProjectStatus] = Field(default=None)
     price: Optional[float] = Field(default=None, ge=0)
     deadline: Optional[date] = Field(default=None)
 
